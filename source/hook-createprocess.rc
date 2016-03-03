@@ -1,0 +1,41 @@
+/*
+	hook-createprocess - Basic Process Manipulation Tool Kit (BPMTK)
+	Source code put in public domain by Didier Stevens, no Copyright
+	https://DidierStevens.com
+	Use at your own risk
+
+	Shortcomings, or todo's ;-)
+	
+	History:
+	2009/11/04: start
+*/
+
+#define VERSION_NUMBER 0,0,0,1
+#define VERSION_STRING "0.0.0.1"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION VERSION_NUMBER
+PRODUCTVERSION VERSION_NUMBER
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "00000000"
+        BEGIN
+            VALUE "CompanyName", "Didier Stevens (https://DidierStevens.com)" "\000"
+            VALUE "FileDescription", "hook-createprocess - Basic Process Manipulation Tool Kit (BPMTK)" "\000"
+            VALUE "FileVersion", VERSION_STRING "\000"
+            VALUE "LegalCopyright", "Public domain" "\000"
+            VALUE "OriginalFilename", "hook-createprocess.dll" "\000"
+            VALUE "ProductName", "hook-createprocess bpmtk" "\000"
+            VALUE "ProductVersion", VERSION_STRING "\000"
+            VALUE "Comments", "Use this DLL to block programs from creating processes.\015\012\015\012Use at your own risk." "\000"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0000 0x0000
+    END
+END

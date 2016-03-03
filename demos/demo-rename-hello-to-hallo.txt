@@ -1,0 +1,7 @@
+#demo to show renaming Hello World to Hallo World
+# 1 logon as limited user
+# 2 start hello-world-getversion.exe
+# 3 run bpmtk this-config-file to change Hello World to Hallo World
+process-name hello-world-getversion.exe
+search-and-write module:. ascii:Hello ascii:Hallo
+pause

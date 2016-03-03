@@ -1,0 +1,46 @@
+/*
+	Basic Process Manipulation Tool Kit (BPMTK)
+	Source code put in public domain by Didier Stevens, no Copyright
+	https://DidierStevens.com
+	Use at your own risk
+
+	Shortcomings, or todo's ;-)
+	
+	History:
+	2008/02/10: rc file
+	2008/02/12: manifest file
+	2009/06/06: added #define RT_MANIFEST 24
+*/
+
+#include "bpmtk.h"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION VERSION_NUMBER
+PRODUCTVERSION VERSION_NUMBER
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "00000000"
+        BEGIN
+            VALUE "CompanyName", "Didier Stevens (https://DidierStevens.com)" "\000"
+            VALUE "FileDescription", "Basic Process Manipulation Tool Kit (BPMTK)" "\000"
+            VALUE "FileVersion", VERSION_STRING "\000"
+            VALUE "LegalCopyright", "Public domain" "\000"
+            VALUE "OriginalFilename", "bpmtk.exe" "\000"
+            VALUE "ProductName", "bpmtk" "\000"
+            VALUE "ProductVersion", VERSION_STRING "\000"
+            VALUE "Comments", "Use this program to manipulate processes.\015\012\015\012Use at your own risk." "\000"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0000 0x0000
+    END
+END
+
+#define MANIFEST_RESOURCE_ID 1
+#define RT_MANIFEST 24
+MANIFEST_RESOURCE_ID RT_MANIFEST "bpmtk.exe.manifest"

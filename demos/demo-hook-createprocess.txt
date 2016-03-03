@@ -1,0 +1,6 @@
+verbose 1
+process-name notepad.exe
+inject-dll currentdirectory:hook-createprocess.dll
+pause
+reject-dll hook-createprocess.dll
+pause

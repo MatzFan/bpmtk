@@ -1,0 +1,10 @@
+#demo to show injection of DLL with IAT hooking
+# 1 logon as limited user
+# 2 start hello-world-getversion.exe
+# 3 run bpmtk this-config-file to patch GetVersion IAT
+process-name hello-world-getversion.exe
+verbose 1
+inject-dll hook-hello.dll
+pause
+reject-dll hook-hello.dll
+pause

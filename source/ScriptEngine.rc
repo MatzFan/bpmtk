@@ -1,0 +1,13 @@
+/*
+	ScriptEngine
+	Source code put in public domain by Didier Stevens, no Copyright
+	https://DidierStevens.com
+	Use at your own risk
+
+	Shortcomings, or todo's ;-)
+	
+	History:
+	2008/02/19: rc file
+*/
+
+1                       TYPELIB MOVEABLE PURE   "ScriptEngine.tlb"

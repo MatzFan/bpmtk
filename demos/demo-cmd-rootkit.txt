@@ -1,0 +1,5 @@
+process-name cmd.exe
+inject-dll currentdirectory:cmd-rootkit.dll
+pause
+reject-dll cmd-rootkit.dll
+pause

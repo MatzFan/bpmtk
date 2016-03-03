@@ -1,0 +1,6 @@
+verbose 1
+process-name iexplore.exe
+inject-dll currentdirectory:hook-iexplore.dll
+pause
+reject-dll hook-iexplore.dll
+pause

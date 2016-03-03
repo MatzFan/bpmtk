@@ -1,0 +1,11 @@
+#2008/02/14
+#demo to show injection of dll with msgbox in notepad
+# 1 disable Kerio firewall and logon as limited user
+# 2 start notepad.exe
+# 3 run bpmtk this-config-file to demo
+process-name notepad.exe
+verbose 1
+inject-dll currentdirectory:injectscript.dll
+pause
+reject-dll injectscript.dll
+pause

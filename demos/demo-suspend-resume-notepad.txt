@@ -1,0 +1,6 @@
+process-name notepad.exe
+pause
+suspend
+pause
+resume
+pause

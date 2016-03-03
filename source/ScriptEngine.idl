@@ -1,0 +1,26 @@
+// 2008/02/21
+ 
+[uuid(7C1B3C68-A18E-4518-A821-AF957592B3C6), version(1.0), helpstring("ScriptEngine, an ActiveX Scripting Host")]
+ 
+library ScriptEngine
+{
+	importlib("stdole32.tlb");
+
+	// Our IApp VTable
+	[uuid(6C3C3617-4CA4-4e67-AEDB-CF5FF9ABA960), dual, hidden, helpstring("Functions implemented by the main object")]
+	interface IAppVTable : IDispatch
+	{
+		[id(1)] HRESULT Output([in] BSTR line);
+		[id(2)] HRESULT Peek([in] long, [out, retval] VARIANT *);
+		[id(3)] HRESULT Poke([in] long, [in] byte);
+		[id(4)] HRESULT Suspend();
+		[id(5)] HRESULT Resume();
+	}
+
+	// Our IApp object
+	[uuid(84450702-F17A-425e-8380-45EAA0D588E4), helpstring("The main (scriptengine) object for ScriptEngine")]
+	coclass IApp
+	{
+		[default] interface IAppVTable;
+	}
+}

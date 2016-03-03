@@ -1,0 +1,5 @@
+process-name CASToggleDemoTargetApp.exe
+write version:2.0.50727.42 hex:7A3822B0 hex:01000000
+write version:2.0.50727.832 hex:7A38716C hex:01000000
+write version:2.0.50727.1433 hex:7A3AD438 hex:01000000
+pause

@@ -1,0 +1,5 @@
+process-name notepad.exe
+
+plugin plugin.dll
+
+strings memory:writable filter:BankAccount

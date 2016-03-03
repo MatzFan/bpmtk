@@ -1,0 +1,4 @@
+start cmd.exe
+search-and-write module:. unicode:DisableCMD hex:41
+inject-dll dummy.dll
+pause
