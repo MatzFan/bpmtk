@@ -20,14 +20,15 @@
 
 BOOL g_bHookHttpOpenRequestAInstalled;
 BOOL g_bHookInternetConnectAInstalled;
-BOOL g_bHookInternetReadFileInstalled;
+// BOOL g_bHookInternetReadFileInstalled;
+BOOL g_bHookHttpQueryInfoAInstalled;
 
 HINTERNET __stdcall (*OriginalHttpOpenRequestA)(HINTERNET hConnect, LPCTSTR lpszVerb, LPCTSTR lpszObjectName, LPCTSTR lpszVersion, LPCTSTR lpszReferer, LPCTSTR* lplpszAcceptTypes, DWORD dwFlags, DWORD_PTR dwContext);
 
 HINTERNET __stdcall HookHttpOpenRequestA(HINTERNET hConnect, LPCTSTR lpszVerb, LPCTSTR lpszObjectName, LPCTSTR lpszVersion, LPCTSTR lpszReferer, LPCTSTR* lplpszAcceptTypes, DWORD dwFlags, DWORD_PTR dwContext)
 {
 	char szDebug[1024];
-	
+
 	snprintf(szDebug, 1023, "HookHttpOpenRequestA %08X %s %s", dwFlags, NULL != lpszVerb ? lpszVerb : "NULL", lpszObjectName);
 	szDebug[1023] = '\0';
 	OutputDebugString(szDebug);
@@ -46,26 +47,48 @@ HINTERNET __stdcall HookInternetConnectA(HINTERNET hInternet, LPCSTR lpszServerN
 	return (*OriginalInternetConnectA)(hInternet, lpszServerName, nServerPort, lpszUserName, lpszPassword, dwService, dwFlags, dwContext);
 }
 
-BOOL __stdcall (*OriginalInternetReadFile)(HINTERNET hFile, LPVOID lpBuffer, DWORD dwNumberOfBytesToRead, LPDWORD lpdwNumberOfBytesRead);
+// BOOL __stdcall (*OriginalInternetReadFile)(HINTERNET hFile, LPVOID lpBuffer, DWORD dwNumberOfBytesToRead, LPDWORD lpdwNumberOfBytesRead);
 
-BOOL __stdcall HookInternetReadFile(HINTERNET hFile, LPVOID lpBuffer, DWORD dwNumberOfBytesToRead, LPDWORD lpdwNumberOfBytesRead)
-{
-	char szDebug[2048];
-	char szData[1024];
-	BOOL bResult;
-	unsigned int uiIter;
+// BOOL __stdcall HookInternetReadFile(HINTERNET hFile, LPVOID lpBuffer, DWORD dwNumberOfBytesToRead, LPDWORD lpdwNumberOfBytesRead)
+// {
+	// char szDebug[2048];
+	// char szData[1024];
+	// BOOL bResult;
+	// unsigned int uiIter;
 	
-	snprintf(szDebug, 1023, "HookInternetReadFile dwNumberOfBytesToRead %08X", dwNumberOfBytesToRead);
-	szDebug[1023] = '\0';
-	OutputDebugString(szDebug);
-	bResult = (*OriginalInternetReadFile)(hFile, lpBuffer, dwNumberOfBytesToRead, lpdwNumberOfBytesRead);
-	for (uiIter = 0; uiIter < *lpdwNumberOfBytesRead && uiIter < 1024; uiIter++)
-	  szData[uiIter] = isprint(((char *)lpBuffer)[uiIter]) ? ((char *)lpBuffer)[uiIter] : '.';
-	szData[*lpdwNumberOfBytesRead] = '\0';
-	snprintf(szDebug, 1023, "HookInternetReadFile *lpdwNumberOfBytesRead %08X data %s", *lpdwNumberOfBytesRead, szData);
-	szDebug[2047] = '\0';
-	OutputDebugString(szDebug);
-	return bResult;
+	// snprintf(szDebug, 1023, "HookInternetReadFile dwNumberOfBytesToRead %d", dwNumberOfBytesToRead); // changed from %08X
+	// szDebug[1023] = '\0';
+	// OutputDebugString(szDebug);
+	// bResult = (*OriginalInternetReadFile)(hFile, lpBuffer, dwNumberOfBytesToRead, lpdwNumberOfBytesRead);
+	// for (uiIter = 0; uiIter < *lpdwNumberOfBytesRead && uiIter < 1024; uiIter++)
+	//   szData[uiIter] = isprint(((char *)lpBuffer)[uiIter]) ? ((char *)lpBuffer)[uiIter] : '.';
+	// szData[*lpdwNumberOfBytesRead] = '\0';
+	// snprintf(szDebug, 1023, "HookInternetReadFile *lpdwNumberOfBytesRead %d data %s", *lpdwNumberOfBytesRead, szData); // changed from %08X
+	// szDebug[2047] = '\0';
+	// OutputDebugString(szDebug);
+	// return bResult;
+// }
+
+HINTERNET __stdcall (*OriginalHttpQueryInfoA)(HINTERNET hRequest, DWORD dwInfoLevel, LPVOID lpBuffer, LPDWORD lpdwBufferLength, LPDWORD lpdwIndex);
+
+HINTERNET __stdcall HookHttpQueryInfoA(HINTERNET hRequest, DWORD dwInfoLevel, LPVOID lpBuffer, LPDWORD lpdwBufferLength, LPDWORD lpdwIndex)
+{
+	char szData[1024];
+	HINTERNET hResult;
+	unsigned int uiIter;
+	LPVOID requestHeaderData[1024]; // should be large enough for all header data
+	DWORD dwSize = 1024;
+
+	hResult = (*OriginalHttpQueryInfoA)(hRequest, dwInfoLevel, lpBuffer, lpdwBufferLength, lpdwIndex);
+	if(dwInfoLevel == 22) { // code for HTTP_QUERY_RAW_HEADERS_CRLF
+		if(!OriginalHttpQueryInfoA(hRequest, HTTP_QUERY_RAW_HEADERS_CRLF | HTTP_QUERY_FLAG_REQUEST_HEADERS, (LPVOID)requestHeaderData, &dwSize, NULL)) {
+		}
+		for (uiIter = 0; uiIter < dwSize && uiIter < 1024; uiIter++)
+		  szData[uiIter] = ((char *)requestHeaderData)[uiIter];
+		szData[1023] = '\0';
+		OutputDebugString(szData);
+	}
+	return hResult;
 }
 
 #ifdef __BORLANDC__
@@ -103,19 +126,30 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 					OutputDebugString(_TEXT("Hooking InternetConnectA failed."));
       }
       
-      if (FALSE == g_bHookInternetReadFileInstalled)
+    //   if (FALSE == g_bHookInternetReadFileInstalled)
+    //   {
+				// if (S_OK == PatchDIAT(GetModuleForProcess(GetCurrentProcessId(), "urlmon.dll"),
+				// 	"wininet.dll",
+				// 	"InternetReadFile",
+				// 	(PVOID) HookInternetReadFile,
+				// 	(PVOID *) &OriginalInternetReadFile))
+				// 	g_bHookInternetReadFileInstalled = TRUE;
+				// else
+				// 	OutputDebugString(_TEXT("Hooking InternetReadFile failed."));
+    //   }
+
+       if (FALSE == g_bHookHttpQueryInfoAInstalled)
       {
 				if (S_OK == PatchDIAT(GetModuleForProcess(GetCurrentProcessId(), "urlmon.dll"),
 					"wininet.dll",
-					"InternetReadFile",
-					(PVOID) HookInternetReadFile,
-					(PVOID *) &OriginalInternetReadFile))
-					g_bHookInternetReadFileInstalled = TRUE;
+					"HttpQueryInfoA",
+					(PVOID) HookHttpQueryInfoA,
+					(PVOID *) &OriginalHttpQueryInfoA))
+					g_bHookHttpQueryInfoAInstalled = TRUE;
 				else
-					OutputDebugString(_TEXT("Hooking InternetReadFile failed."));
+					OutputDebugString(_TEXT("Hooking HttpQueryInfoA failed."));
       }
-      
-    	break;
+      break;
 
 	  case DLL_THREAD_ATTACH:
       break;
@@ -142,14 +176,21 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 		  		OutputDebugString(_TEXT("Unhooking InternetConnectA failed."));
 			}
 			
-	  	if (TRUE == g_bHookInternetReadFileInstalled)
+	  // 	if (TRUE == g_bHookInternetReadFileInstalled)
+	  // 	{
+		 //  	if (S_OK == PatchDIAT(GetModuleForProcess(GetCurrentProcessId(), "urlmon.dll"), "wininet.dll", "InternetReadFile", (PVOID) OriginalInternetReadFile, NULL))
+			// 		g_bHookInternetReadFileInstalled = FALSE;
+			// 	else
+		 //  		OutputDebugString(_TEXT("Unhooking InternetReadFile failed."));
+			// }
+
+		if (TRUE == g_bHookHttpQueryInfoAInstalled)
 	  	{
-		  	if (S_OK == PatchDIAT(GetModuleForProcess(GetCurrentProcessId(), "urlmon.dll"), "wininet.dll", "InternetReadFile", (PVOID) OriginalInternetReadFile, NULL))
-					g_bHookInternetReadFileInstalled = FALSE;
+		  	if (S_OK == PatchDIAT(GetModuleForProcess(GetCurrentProcessId(), "urlmon.dll"), "wininet.dll", "HttpQueryInfoA", (PVOID) OriginalHttpQueryInfoA, NULL))
+					g_bHookHttpQueryInfoAInstalled = FALSE;
 				else
-		  		OutputDebugString(_TEXT("Unhooking InternetReadFile failed."));
+		  		OutputDebugString(_TEXT("Unhooking HttpQueryInfoA failed."));
 			}
-			
       break;
   }
   
